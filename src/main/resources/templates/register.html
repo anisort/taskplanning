@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <title>Registration</title>
+    <style>
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            background: dimgray;
+        }
+        .registration-form {
+            position: relative;
+            width: 400px;
+            height: 750px;
+            background: cadetblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Тень */
+        }
+
+        h2{
+            font-size: 2em;
+            color: white;
+            text-align: center;
+        }
+
+        .inputbox{
+            position: relative;
+            margin: 30px 0;
+            width: 310px;
+            border-bottom: 2px solid white;
+        }
+
+        .inputbox label{
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1em;
+            pointer-events: none;
+            transition: .5s;
+        }
+
+        .inputbox input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        .inputbox input[type="date"] {
+            color: white;
+        }
+
+        input:focus ~ label,
+        input:valid ~ :valid{
+            top: -5px;
+        }
+
+        .inputbox input{
+            width: 100%;
+            height: 70px;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            padding: 35px 0 5px;
+            color: white;
+        }
+
+        .inputbox ion-icon{
+            position: absolute;
+            right: 8px;
+            color: white;
+            font-size: 1.2em;
+            top: 20px;
+        }
+
+        button{
+            width: 100%;
+            height: 40px;
+            border-radius: 40px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .login{
+            font-size: .9em;
+            color: white;
+            text-align: center;
+            margin: 25px 0 10px;
+        }
+
+        .login p{
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .login p a:hover{
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<section>
+
+    <div class="registration-form">
+        <form id="registrationForm">
+            <h2>Registration</h2>
+            <div class="inputbox">
+                <ion-icon name="person-outline"></ion-icon>
+                <input type="text" id="username" name="username">
+                <label for="username">Username</label>
+            </div>
+            <div class="inputbox">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="email" id="email" name="email">
+                <label for="email">Email</label>
+            </div>
+            <div class="inputbox">
+                <input type="date" id="birthDate" name="birthDate">
+                <label for="birthDate">Birth Date</label>
+            </div>
+            <div class="inputbox">
+                <ion-icon name="eye-off-outline" class="show-password" id="togglePassword"></ion-icon>
+                <input type="password" id="password" name="password">
+                <label for="password">Password</label>
+            </div>
+            <div class="inputbox">
+                <ion-icon name="eye-off-outline" class="show-password" id="toggleRepeatPassword"></ion-icon>
+                <input type="password" id="repeatPassword" name="repeatPassword">
+                <label for="repeatPassword">Repeat Password</label>
+            </div>
+            <button type="submit">Registrate</button>
+            <div class="login">
+                <p>Already have an account? <a href="/login"> Login</a></p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Validation errors -->
+    <div class="modal fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validationErrorModalLabel">Validation Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="validationErrorMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</section>
+
+
+<script>
+    $(document).ready(function() {
+        $("#registrationForm").submit(function(event) {
+            event.preventDefault();
+
+            var formData = {
+                username: $("#username").val(),
+                email: $("#email").val(),
+                birthDate: $("#birthDate").val(),
+                password: $("#password").val(),
+                repeatPassword: $("#repeatPassword").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/register",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    alert("User registered successfully!");
+                    window.location.href = "/login";
+                },
+                error: function(xhr, status, error) {
+                    var validationErrors = xhr.responseJSON;
+                    var errorMessage = "Validation Error:<br>";
+                    for (var key in validationErrors) {
+                        if (validationErrors.hasOwnProperty(key)) {
+                            errorMessage += "- " + validationErrors[key] + "<br>";
+                        }
+                    }
+                    $('#validationErrorMessage').html(errorMessage);
+                    $('#validationErrorModal').modal('show');
+                    console.error("Create failed:", error);
+
+                }
+            });
+        });
+
+        $('#togglePassword').click(function() {
+            var passwordInput = $('#password');
+            var type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+            passwordInput.attr('type', type);
+            $(this).attr('name', type === 'password' ? 'eye-off-outline' : 'eye-outline');
+        });
+
+        $('#toggleRepeatPassword').click(function() {
+            var passwordInput = $('#repeatPassword');
+            var type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+            passwordInput.attr('type', type);
+            $(this).attr('name', type === 'password' ? 'eye-off-outline' : 'eye-outline');
+        });
+    });
+
+
+</script>
+</body>
+</html>
+
+
+

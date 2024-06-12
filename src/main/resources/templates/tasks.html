@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+    <style>
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            background: dimgray;
+        }
+
+        .tasks-container {
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            background: cadetblue;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        #tasksTable {
+            width: 100%;
+        }
+
+
+        h2 {
+            font-size: 2em;
+            color: white;
+            text-align: center;
+        }
+
+        #createTaskBtn {
+            width: auto;
+            height: auto;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 20px;
+            color: black;
+        }
+
+        .delete-btn{
+            background: firebrick;
+            border: none;
+        }
+
+        .update-btn{
+            background: goldenrod;
+            color: white;
+            border: none;
+        }
+
+        th{
+            color: white;
+        }
+
+    </style>
+    <title>Tasks</title>
+</head>
+<body>
+
+<section>
+
+    <div class="container tasks-container">
+        <h2>Tasks</h2>
+        <div class="table-container">
+            <table id="tasksTable" class="display">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Author</th>
+                    <th>Topic</th>
+                    <th>Creation date</th>
+                    <th>Deadline date</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th>Id</th>
+                    <th>Author</th>
+                    <th>Topic</th>
+                    <th>Creation date</th>
+                    <th>Deadline date</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                </tfoot>
+            </table>
+
+        </div>
+        <button type="button" class="btn btn-success" id="createTaskBtn">Create Task</button>
+    </div>
+
+    <!-- Update task -->
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Update Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateForm">
+                        <input type="hidden" id="taskId">
+                        <div class="form-group">
+                            <label for="topic">Topic</label>
+                            <input type="text" class="form-control" id="topic" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline_date">Deadline Date</label>
+                            <input type="date" class="form-control" id="deadline_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline_time">Deadline Time</label>
+                            <input type="time" class="form-control" id="deadline_time" required>
+                        </div>
+                        <div class="form-group" id="update_authorGroup">
+                            <label for="author">Author</label>
+                            <input type="text" class="form-control" id="author">
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline_date">Creation Date</label>
+                            <input type="date" class="form-control" id="creation_date" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline_time">Creation Time</label>
+                            <input type="time" class="form-control" id="creation_time" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create task -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Create Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createForm">
+                        <div class="form-group">
+                            <label for="create_topic">Topic</label>
+                            <input type="text" class="form-control" id="create_topic" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create_description">Description</label>
+                            <textarea class="form-control" id="create_description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="create_deadline_date">Deadline Date</label>
+                            <input type="date" class="form-control" id="create_deadline_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create_deadline_time">Deadline Time</label>
+                            <input type="time" class="form-control" id="create_deadline_time" required>
+                        </div>
+                        <div class="form-group" id="create_authorGroup">
+                            <label for="author">Author</label>
+                            <input type="text" class="form-control" id="create_author">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Validation errors -->
+    <div class="modal fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validationErrorModalLabel">Validation Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="validationErrorMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var table = $('#tasksTable').DataTable({
+            "ajax": {
+                "url": "http://localhost:8080/api/tasks",
+                "dataSrc": ""
+            },
+            "columns": [
+                { "data": "id" },
+                { "data": "author" },
+                { "data": "topic" },
+                { "data": "creation_date" },
+                { "data": "deadline_date" },
+                { "data": "description" },
+                {
+                    "data": null,
+                    "render": function (data, type, row) {
+                        return '<button class="btn btn-danger delete-btn" data-id="' + row.id + '">Delete</button>' +
+                            '<button class="btn btn-warning update-btn" data-id="' + row.id + '" data-topic="' + row.topic + '" data-description="' + row.description + '" data-deadline_date="' + row.deadline_date + '" data-creation_date="' + row.creation_date + '" data-author="' + row.author + '">Update</button>';
+                    }
+                }
+            ]
+        });
+
+        $('#createTaskBtn').on('click', function() {
+            $('#createForm')[0].reset();
+            $('#createModal').modal('show');
+        });
+
+        $('#createForm').on('submit', function(event) {
+
+            event.preventDefault();
+            var currentDateTime = new Date();
+            var currentDate = currentDateTime.toISOString().slice(0,10);
+            var currentTime = currentDateTime.toTimeString().slice(0,8);
+
+            var newTask = {
+                topic: $('#create_topic').val(),
+                description: $('#create_description').val(),
+                deadline_date: $('#create_deadline_date').val() + "T" + $('#create_deadline_time').val(),
+                author: $('#create_author').val(),
+                creation_date: currentDate + "T" + currentTime
+            };
+
+            console.log("Sending create request with data:", newTask);
+
+            $.ajax({
+                url: 'http://localhost:8080/api/tasks',
+                type:  'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(newTask),
+                success: function(result) {
+                    $('#createModal').modal('hide');
+                    $('#tasksTable').DataTable().ajax.reload();
+                },
+                error: function(xhr, status, error) {
+                    var validationErrors = xhr.responseJSON;
+                    var errorMessage = "Validation Error:<br>";
+                    for (var key in validationErrors) {
+                        if (validationErrors.hasOwnProperty(key)) {
+                            errorMessage += "- " + validationErrors[key] + "<br>";
+                        }
+                    }
+                    $('#validationErrorMessage').html(errorMessage);
+                    $('#validationErrorModal').modal('show');
+                    console.error("Create failed:", error);
+
+                }
+
+            });
+
+
+        });
+
+
+        $('#tasksTable').on('click', '.delete-btn', function() {
+            var taskId = $(this).data('id');
+            $.ajax({
+                url: 'http://localhost:8080/api/tasks/' + taskId,
+                type: 'DELETE',
+                success: function(result) {
+                    table.ajax.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Create failed:", error);
+                }
+            });
+        });
+
+        $('#tasksTable').on('click', '.update-btn', function() {
+            var taskId = $(this).data('id');
+            var topic = $(this).data('topic');
+            var description = $(this).data('description');
+            var deadline_date = $(this).data('deadline_date').split('T')[0];
+            var deadline_time = $(this).data('deadline_date').split('T')[1];
+            var author = $(this).data('author');
+
+
+            var creation_date = $(this).data('creation_date').split('T')[0];
+            var creation_time = $(this).data('creation_date').split('T')[1];
+
+            $('#taskId').val(taskId);
+            $('#topic').val(topic);
+            $('#description').val(description);
+            $('#deadline_date').val(deadline_date);
+            $('#deadline_time').val(deadline_time);
+            $('#author').val(author);
+
+            $('#creation_date').val(creation_date);
+            $('#creation_time').val(creation_time);
+
+            $('#updateForm').off('submit').on('submit', function(event) {
+                event.preventDefault();
+
+                var updatedTask = {
+                    id: $('#taskId').val(),
+                    topic: $('#topic').val(),
+                    description: $('#description').val(),
+                    deadline_date: $('#deadline_date').val() + "T" + $('#deadline_time').val(),
+                    author: $('#author').val(),
+                    creation_date: $('#creation_date').val() + "T" + $('#creation_time').val()
+                };
+
+                console.log("Sending update request with data:", updatedTask);
+
+                $.ajax({
+                    url: 'http://localhost:8080/api/tasks/' + updatedTask.id,
+                    type:  'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedTask),
+                    success: function(result) {
+                        $('#updateModal').modal('hide');
+                        table.ajax.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        var validationErrors = xhr.responseJSON;
+                        var errorMessage = "Validation Error:<br>";
+                        for (var key in validationErrors) {
+                            if (validationErrors.hasOwnProperty(key)) {
+                                errorMessage += "- " + validationErrors[key] + "<br>";
+                            }
+                        }
+                        $('#validationErrorMessage').html(errorMessage);
+                        $('#validationErrorModal').modal('show');
+                        console.error("Updated failed:", error);
+                    }
+                });
+            });
+
+            $('#updateModal').modal('show');
+        });
+
+        $.ajax({
+            url: 'http://localhost:8080/api/users',
+            type: 'GET',
+            success: function(data) {
+                if(data.role !== 'ADMIN') {
+                    $('#update_authorGroup').hide();
+                    $('#create_authorGroup').hide();
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" />
+    <!-- <link rel="stylesheet" th:href="@{/css/login.css}" /> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <title>Login</title>
+    <style>
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            background: dimgray;
+        }
+        .login-form {
+            position: relative;
+            width: 400px;
+            height: 450px;
+            background: cadetblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Тень */
+        }
+
+        h2{
+            font-size: 2em;
+            color: white;
+            text-align: center;
+        }
+
+        .inputbox{
+            position: relative;
+            margin: 30px 0;
+            width: 310px;
+            border-bottom: 2px solid white;
+        }
+
+        .inputbox label{
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1em;
+            pointer-events: none;
+            transition: .5s;
+        }
+
+        input:focus ~ label,
+        input:valid ~ :valid{
+            top: -5px;
+        }
+
+        .inputbox input{
+            width: 100%;
+            height: 70px;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            padding: 35px 0 5px;
+            color: white;
+        }
+
+        .inputbox ion-icon{
+            position: absolute;
+            right: 8px;
+            color: white;
+            font-size: 1.2em;
+            top: 20px;
+        }
+
+        button{
+            width: 100%;
+            height: 40px;
+            border-radius: 40px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .register{
+            font-size: .9em;
+            color: white;
+            text-align: center;
+            margin: 25px 0 10px;
+        }
+
+        .register p{
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .register p a:hover{
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<section>
+
+    <div class="login-form">
+        <form th:action="@{/login}" method="post">
+            <h2>Login</h2>
+            <div class="inputbox">
+                <ion-icon name="person-outline"></ion-icon>
+                <input type="text" id="username" name="username" required>
+                <label for="username">Username</label>
+            </div>
+            <div class="inputbox">
+                <ion-icon name="eye-off-outline" class="show-password" id="togglePassword"></ion-icon>
+                <input type="password" id="password" name="password"/>
+                <label for="password">Password</label>
+            </div>
+            <button type="submit">Login</button>
+            <div class="register">
+                <p>Don't have an account?<a href="/register"> Register</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</section>
+
+<script>
+
+    $('#togglePassword').click(function() {
+        var passwordInput = $('#password');
+        var type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+        passwordInput.attr('type', type);
+        $(this).attr('name', type === 'password' ? 'eye-off-outline' : 'eye-outline');
+    });
+
+</script>
+
+</body>
+</html>
