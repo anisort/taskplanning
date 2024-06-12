@@ -48,6 +48,21 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+     public UserDTO getCurrentUser(){
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByName(currentUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return convertToDTO(currentUser);
+    }
+
+    private boolean usernameExists(String username) {
+        return userRepository.findByName(username).isPresent();
+    }
+
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(user.getId(), user.getName(), user.getRole());
+    }
+
     private boolean usernameExists(String username) {
         return userRepository.findByName(username).isPresent();
     }
