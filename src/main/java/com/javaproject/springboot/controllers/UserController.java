@@ -23,9 +23,6 @@ public class UserController {
 
     @GetMapping
     public UserDTO getCurrentUser() {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = userRepository.findByName(currentUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new UserDTO(currentUser.getId(), currentUser.getName(), currentUser.getRole());
+        return userService.getCurrentUser();
     }
 }
